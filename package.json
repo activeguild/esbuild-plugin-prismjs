@@ -3,8 +3,10 @@
   "version": "1.0.1",
   "description": "This is a prismjs plugin for esbuild.",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && node -r esbuild-register ./tools/build.ts",
+    "build:types": "tsc --emitDeclarationOnly",
     "eslint": "eslint '**/*.ts' --ignore-path .gitignore",
     "prettier": "prettier . --write",
     "prepare": "husky install"
