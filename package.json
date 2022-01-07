@@ -2,7 +2,7 @@
   "name": "esbuild-plugin-prismjs",
   "version": "1.0.1",
   "description": "This is a prismjs plugin for esbuild.",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "rimraf dist && node -r esbuild-register ./tools/build.ts",
     "eslint": "eslint '**/*.ts' --ignore-path .gitignore",
