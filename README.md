@@ -8,7 +8,7 @@ If you are using babel, please use [babel-plugin-prismjs](https://www.npmjs.com/
 
 ## Introduce
 
-This is a [prismjs](https://github.com/PrismJS/prism/blob/master/assets/style.css) plugin for esbuild.
+This is a [PrismJS](https://github.com/PrismJS/prism/blob/master/assets/style.css) plugin for esbuild.
 
 ## Install
 
