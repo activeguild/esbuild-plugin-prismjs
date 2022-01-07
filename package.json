@@ -4,7 +4,7 @@
   "description": "This is a prismjs plugin for esbuild.",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && node -r esbuild-register ./tools/esbuild.ts",
+    "build": "rimraf dist && node -r esbuild-register ./tools/build.ts",
     "eslint": "eslint '**/*.ts' --ignore-path .gitignore",
     "prettier": "prettier . --write",
     "prepare": "husky install"
