@@ -7,6 +7,7 @@
 If you are using babel, please use [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs).
 
 ## Introduce
+
 This is a [prismjs](https://github.com/PrismJS/prism/blob/master/assets/style.css) plugin for esbuild.
 
 ## Install
@@ -18,13 +19,36 @@ npm i -D esbuild-plugin-prismjs
 
 ## Usage
 
+```bash
+import { prismPlugin } from 'esbuild-plugin-prismjs'
+import { build } from 'esbuild'
 
-// todo
+build({
+  entryPoints: ['./src/index.ts'],
+  outdir: 'dist',
+  bundle: true,
+  minify: true,
+  platform: 'node',
+  plugins: [
+    prismPlugin({
+      languages: ['typescript', 'javascript', 'css', 'markup'],
+      plugins: [
+        'line-highlight',
+        'line-numbers',
+        'show-language',
+        'copy-to-clipboard',
+      ],
+      theme: 'okaidia',
+      css: true,
+    }),
+  ],
+})
 
+```
 
 ## Options
-The plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
 
+The plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
 
 ## Principles of conduct
 

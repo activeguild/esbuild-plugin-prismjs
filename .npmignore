@@ -1,0 +1,11 @@
+.vscode
+.github
+src
+release.sh
+tools
+tsconfig.json
+webpack.config.ts
+.eslintrc.js
+.prettierrc.js
+/vendor
+.babelrc
