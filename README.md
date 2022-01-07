@@ -6,7 +6,7 @@
 
 If you are using babel, please use [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs).
 
-# esbuild-plugin-prismjs
+## Introduce
 This is a [prismjs](https://github.com/PrismJS/prism/blob/master/assets/style.css) plugin for esbuild.
 
 ## Install
