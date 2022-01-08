@@ -8,8 +8,8 @@ If you are using babel, please use [babel-plugin-prismjs](https://www.npmjs.com/
 
 ## Introduce
 
-This is a [PrismJS](https://github.com/PrismJS/prisms) plugin for esbuild.
-Automatically bundle the language and plugins set in the configuration at build time.
+A [PrismJS](https://github.com/PrismJS/prisms) plugin for esbuild.
+Bundle the language and plugins set in the configuration at build time.
 The same options as [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) are available.
 
 ## Install
