@@ -44,7 +44,7 @@ build({
       css: true,
     }),
   ],
-})
+}).catch(() => process.exit(1))
 
 ```
 
