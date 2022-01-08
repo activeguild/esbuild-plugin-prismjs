@@ -43,10 +43,12 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
               return [...deps, ...add]
             }, []),
         ]
-        const css =
+        const cssArr =
           config.css && config.theme ? [getThemePath(config.theme)] : []
         let contents = ''
-        loaded.push(...css)
+        loaded.push(...cssArr)
+
+        let css = ''
 
         for (const loadedPath of loaded) {
           const text = await fs.readFileSync(
@@ -56,11 +58,15 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
           if (loadedPath.endsWith('.js')) {
             contents = `${contents};${text}`
           } else {
-            const insertStyleScript = makeInsertStyleScript(
-              text.replace(/[\n]/g, '').replace(/\s+/g, ' ')
-            )
-            contents = `${contents};${insertStyleScript}`
+            css = `${css};${text}`
           }
+        }
+
+        if (css) {
+          const insertStyleScript = makeInsertStyleScript(
+            css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
+          )
+          contents = `${contents};${insertStyleScript}`
         }
         return {
           contents,
