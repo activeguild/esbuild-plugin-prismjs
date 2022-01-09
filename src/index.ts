@@ -12,9 +12,10 @@ type PluginOptions = {
   plugins: string[]
   theme: string
   css: true
+  inline?: boolean
 }
 
-export const prismPlugin = (config: PluginOptions): Plugin => {
+export const prismPlugin = (options: PluginOptions): Plugin => {
   return {
     name: 'prismjs',
     setup(build) {
@@ -26,57 +27,96 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
       })
 
       build.onLoad({ filter: /.*/, namespace: 'prismjs-ns' }, async () => {
-        const finalLanguages = getFinalLanguages(config.languages)
-        const loaded = [
-          'prismjs/prism.js',
-          ...getLoader(prismConfig, [...finalLanguages, ...config.plugins])
+        try {
+          const finalOptions = getFiinalOptions(options)
+          const loaded = ['prismjs/prism.js']
+          const loadedPrismjs = getLoader(prismConfig, [
+            ...finalOptions.languages,
+            ...finalOptions.plugins,
+          ])
             .getIds()
             .reduce((deps: string[], dep: string) => {
               const addPath = isPlugin(dep)
                 ? getPluginPath(dep)
                 : getLanguagePath(dep)
-              const add = [`${addPath}.js`]
-              if (config.css && isPlugin(dep) && !getNoCSS('plugins', dep)) {
+              const add = [`${addPath}.min.js`]
+              if (
+                finalOptions.css &&
+                isPlugin(dep) &&
+                !getNoCSS('plugins', dep)
+              ) {
                 add.unshift(getPluginPath(dep) + '.css')
               }
 
               return [...deps, ...add]
-            }, []),
-        ]
-        const cssArr =
-          config.css && config.theme ? [getThemePath(config.theme)] : []
-        let contents = ''
-        loaded.push(...cssArr)
+            }, []) as string[]
 
-        let css = ''
+          loaded.push(...loadedPrismjs)
 
-        for (const loadedPath of loaded) {
-          const text = await fs.readFileSync(
-            path.resolve(path.resolve(), `node_modules/${loadedPath}`),
-            { encoding: 'utf8' }
-          )
-          if (loadedPath.endsWith('.js')) {
-            contents = `${contents};${text}`
-          } else {
-            css = `${css};${text}`
+          const cssArr =
+            finalOptions.css && finalOptions.theme
+              ? [getThemePath(finalOptions.theme)]
+              : []
+          let contents = ''
+          loaded.push(...cssArr)
+          let css = ''
+
+          for (const loadedPath of loaded) {
+            const text = await fs.readFileSync(
+              path.resolve(path.resolve(), `node_modules/${loadedPath}`),
+              { encoding: 'utf8' }
+            )
+            if (loadedPath.endsWith('.js')) {
+              contents = `${contents};${text}`
+            } else {
+              css = `${css}${text}`
+            }
           }
-        }
 
-        if (css) {
-          const insertStyleScript = makeInsertStyleScript(
-            css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
-          )
-          contents = `${contents};${insertStyleScript}`
-        }
-        return {
-          contents,
-          loader: 'js',
+          if (css) {
+            const replacedCss = css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
+            if (finalOptions.inline) {
+              const inlineStyleScript = makeInsertStyleScript(replacedCss)
+              contents = `${contents};${inlineStyleScript}`
+            } else {
+              const outpurCssFilePath = path.resolve(
+                build.initialOptions.outdir || './',
+                'prism.css'
+              )
+              fs.writeFileSync(outpurCssFilePath, replacedCss)
+            }
+          }
+          return {
+            contents,
+            loader: 'js',
+          }
+        } catch (e) {
+          if (e instanceof Error) {
+            return {
+              errors: [
+                {
+                  pluginName: 'esbuild-plugin-prismjs',
+                  text: e.message,
+                  detail: e.stack,
+                },
+              ],
+            }
+          }
         }
       })
     },
   }
 }
-const getFinalLanguages = (languages: string | string[]): string[] => {
+
+const getFiinalOptions = (options: PluginOptions): Required<PluginOptions> => {
+  return {
+    ...options,
+    inline: options.inline === undefined ? true : options.inline,
+    languages: getFiinalLanguages(options.languages),
+  }
+}
+
+const getFiinalLanguages = (languages: string | string[]): string[] => {
   const finalLanguages: string[] = []
   if (typeof languages === 'string') {
     if (languages === 'all') {

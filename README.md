@@ -33,6 +33,7 @@ build({
   platform: 'node',
   plugins: [
     prismPlugin({
+      inlin: true,
       languages: ['typescript', 'javascript', 'css', 'markup'],
       plugins: [
         'line-highlight',
@@ -51,6 +52,12 @@ build({
 ## Options
 
 The plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
+
+#### Custom Options
+
+| Property | Type    | Description                          |
+| -------- | ------- | ------------------------------------ |
+| inline   | boolean | Embed the css inline. (default true) |
 
 ## Principles of conduct
 
