@@ -8,11 +8,11 @@ import getLoader from 'prismjs/dependencies.js'
 type Category = 'plugins' | 'languages' | 'themes'
 
 type PluginOptions = {
-  inline?: boolean
   languages: string | string[]
   plugins: string[]
   theme: string
   css: true
+  inline?: boolean
 }
 
 export const prismPlugin = (config: PluginOptions): Plugin => {
@@ -28,25 +28,34 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
 
       build.onLoad({ filter: /.*/, namespace: 'prismjs-ns' }, async () => {
         try {
-        const finalLanguages = getFinalLanguages(config.languages)
+          const finalConfig = getFiinalConfig(config)
           const loaded = [
             'prismjs/prism.js',
-          ...getLoader(prismConfig, [...finalLanguages, ...config.plugins])
+            ...(getLoader(prismConfig, [
+              ...finalConfig.languages,
+              ...finalConfig.plugins,
+            ])
               .getIds()
               .reduce((deps: string[], dep: string) => {
                 const addPath = isPlugin(dep)
                   ? getPluginPath(dep)
                   : getLanguagePath(dep)
                 const add = [`${addPath}.js`]
-              if (config.css && isPlugin(dep) && !getNoCSS('plugins', dep)) {
+                if (
+                  finalConfig.css &&
+                  isPlugin(dep) &&
+                  !getNoCSS('plugins', dep)
+                ) {
                   add.unshift(getPluginPath(dep) + '.css')
                 }
 
                 return [...deps, ...add]
-              }, []),
+              }, []) as string[]),
           ]
           const cssArr =
-          config.css && config.theme ? [getThemePath(config.theme)] : []
+            finalConfig.css && finalConfig.theme
+              ? [getThemePath(finalConfig.theme)]
+              : []
           let contents = ''
           loaded.push(...cssArr)
 
@@ -91,7 +100,16 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
     },
   }
 }
-const getFinalLanguages = (languages: string | string[]): string[] => {
+
+const getFiinalConfig = (config: PluginOptions): Required<PluginOptions> => {
+  return {
+    ...config,
+    inline: config.inline === undefined ? true : config.inline,
+    languages: getFiinalLanguages(config.languages),
+  }
+}
+
+const getFiinalLanguages = (languages: string | string[]): string[] => {
   const finalLanguages: string[] = []
   if (typeof languages === 'string') {
     if (languages === 'all') {
