@@ -15,7 +15,7 @@ type PluginOptions = {
   inline?: boolean
 }
 
-export const prismPlugin = (config: PluginOptions): Plugin => {
+export const prismPlugin = (options: PluginOptions): Plugin => {
   return {
     name: 'prismjs',
     setup(build) {
@@ -28,37 +28,37 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
 
       build.onLoad({ filter: /.*/, namespace: 'prismjs-ns' }, async () => {
         try {
-          const finalConfig = getFiinalConfig(config)
-          const loaded = [
-            'prismjs/prism.js',
-            ...(getLoader(prismConfig, [
-              ...finalConfig.languages,
-              ...finalConfig.plugins,
-            ])
-              .getIds()
-              .reduce((deps: string[], dep: string) => {
-                const addPath = isPlugin(dep)
-                  ? getPluginPath(dep)
-                  : getLanguagePath(dep)
-                const add = [`${addPath}.js`]
-                if (
-                  finalConfig.css &&
-                  isPlugin(dep) &&
-                  !getNoCSS('plugins', dep)
-                ) {
-                  add.unshift(getPluginPath(dep) + '.css')
-                }
+          const finalOptions = getFiinalOptions(options)
+          const loaded = ['prismjs/prism.js']
+          const loadedPrismjs = getLoader(prismConfig, [
+            ...finalOptions.languages,
+            ...finalOptions.plugins,
+          ])
+            .getIds()
+            .reduce((deps: string[], dep: string) => {
+              const addPath = isPlugin(dep)
+                ? getPluginPath(dep)
+                : getLanguagePath(dep)
+              const add = [`${addPath}.min.js`]
+              if (
+                finalOptions.css &&
+                isPlugin(dep) &&
+                !getNoCSS('plugins', dep)
+              ) {
+                add.unshift(getPluginPath(dep) + '.css')
+              }
 
-                return [...deps, ...add]
-              }, []) as string[]),
-          ]
+              return [...deps, ...add]
+            }, []) as string[]
+
+          loaded.push(...loadedPrismjs)
+
           const cssArr =
-            finalConfig.css && finalConfig.theme
-              ? [getThemePath(finalConfig.theme)]
+            finalOptions.css && finalOptions.theme
+              ? [getThemePath(finalOptions.theme)]
               : []
           let contents = ''
           loaded.push(...cssArr)
-
           let css = ''
 
           for (const loadedPath of loaded) {
@@ -74,10 +74,17 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
           }
 
           if (css) {
-            const insertStyleScript = makeInsertStyleScript(
-              css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
-            )
-            contents = `${contents};${insertStyleScript}`
+            const replacedCss = css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
+            if (finalOptions.inline) {
+              const inlineStyleScript = makeInsertStyleScript(replacedCss)
+              contents = `${contents};${inlineStyleScript}`
+            } else {
+              const outpurCssFilePath = path.resolve(
+                build.initialOptions.outdir || './',
+                'prism.css'
+              )
+              fs.writeFileSync(outpurCssFilePath, replacedCss)
+            }
           }
           return {
             contents,
@@ -101,11 +108,11 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
   }
 }
 
-const getFiinalConfig = (config: PluginOptions): Required<PluginOptions> => {
+const getFiinalOptions = (options: PluginOptions): Required<PluginOptions> => {
   return {
-    ...config,
-    inline: config.inline === undefined ? true : config.inline,
-    languages: getFiinalLanguages(config.languages),
+    ...options,
+    inline: options.inline === undefined ? true : options.inline,
+    languages: getFiinalLanguages(options.languages),
   }
 }
 
