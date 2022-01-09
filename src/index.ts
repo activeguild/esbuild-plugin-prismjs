@@ -69,7 +69,7 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
             if (loadedPath.endsWith('.js')) {
               contents = `${contents};${text}`
             } else {
-              css = `${css};${text}`
+              css = `${css}${text}`
             }
           }
 
