@@ -8,6 +8,7 @@ import getLoader from 'prismjs/dependencies.js'
 type Category = 'plugins' | 'languages' | 'themes'
 
 type PluginOptions = {
+  inline?: boolean
   languages: string | string[]
   plugins: string[]
   theme: string
@@ -26,51 +27,65 @@ export const prismPlugin = (config: PluginOptions): Plugin => {
       })
 
       build.onLoad({ filter: /.*/, namespace: 'prismjs-ns' }, async () => {
+        try {
         const finalLanguages = getFinalLanguages(config.languages)
-        const loaded = [
-          'prismjs/prism.js',
+          const loaded = [
+            'prismjs/prism.js',
           ...getLoader(prismConfig, [...finalLanguages, ...config.plugins])
-            .getIds()
-            .reduce((deps: string[], dep: string) => {
-              const addPath = isPlugin(dep)
-                ? getPluginPath(dep)
-                : getLanguagePath(dep)
-              const add = [`${addPath}.js`]
+              .getIds()
+              .reduce((deps: string[], dep: string) => {
+                const addPath = isPlugin(dep)
+                  ? getPluginPath(dep)
+                  : getLanguagePath(dep)
+                const add = [`${addPath}.js`]
               if (config.css && isPlugin(dep) && !getNoCSS('plugins', dep)) {
-                add.unshift(getPluginPath(dep) + '.css')
-              }
+                  add.unshift(getPluginPath(dep) + '.css')
+                }
 
-              return [...deps, ...add]
-            }, []),
-        ]
-        const cssArr =
+                return [...deps, ...add]
+              }, []),
+          ]
+          const cssArr =
           config.css && config.theme ? [getThemePath(config.theme)] : []
-        let contents = ''
-        loaded.push(...cssArr)
+          let contents = ''
+          loaded.push(...cssArr)
 
-        let css = ''
+          let css = ''
 
-        for (const loadedPath of loaded) {
-          const text = await fs.readFileSync(
-            path.resolve(path.resolve(), `node_modules/${loadedPath}`),
-            { encoding: 'utf8' }
-          )
-          if (loadedPath.endsWith('.js')) {
-            contents = `${contents};${text}`
-          } else {
-            css = `${css};${text}`
+          for (const loadedPath of loaded) {
+            const text = await fs.readFileSync(
+              path.resolve(path.resolve(), `node_modules/${loadedPath}`),
+              { encoding: 'utf8' }
+            )
+            if (loadedPath.endsWith('.js')) {
+              contents = `${contents};${text}`
+            } else {
+              css = `${css};${text}`
+            }
           }
-        }
 
-        if (css) {
-          const insertStyleScript = makeInsertStyleScript(
-            css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
-          )
-          contents = `${contents};${insertStyleScript}`
-        }
-        return {
-          contents,
-          loader: 'js',
+          if (css) {
+            const insertStyleScript = makeInsertStyleScript(
+              css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
+            )
+            contents = `${contents};${insertStyleScript}`
+          }
+          return {
+            contents,
+            loader: 'js',
+          }
+        } catch (e) {
+          if (e instanceof Error) {
+            return {
+              errors: [
+                {
+                  pluginName: 'esbuild-plugin-prismjs',
+                  text: e.message,
+                  detail: e.stack,
+                },
+              ],
+            }
+          }
         }
       })
     },
