@@ -51,9 +51,9 @@ build({
 
 ## Options
 
-The plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
+A plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
 
-#### Custom Options
+#### Original Options
 
 | Property | Type    | Description                          |
 | -------- | ------- | ------------------------------------ |
