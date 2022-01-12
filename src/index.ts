@@ -15,7 +15,7 @@ type PluginOptions = {
   inline?: boolean
 }
 
-export const prismPlugin = (options: PluginOptions): Plugin => {
+export const prismjsPlugin = (options: PluginOptions): Plugin => {
   return {
     name: 'prismjs',
     setup(build) {

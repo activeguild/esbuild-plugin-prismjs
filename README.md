@@ -22,7 +22,7 @@ npm i -D esbuild-plugin-prismjs
 ## Usage
 
 ```bash
-import { prismPlugin } from 'esbuild-plugin-prismjs'
+import { prismjsPlugin } from 'esbuild-plugin-prismjs'
 import { build } from 'esbuild'
 
 build({
@@ -32,8 +32,8 @@ build({
   minify: true,
   platform: 'node',
   plugins: [
-    prismPlugin({
-      inlin: true,
+    prismjsPlugin({
+      inline: true,
       languages: ['typescript', 'javascript', 'css', 'markup'],
       plugins: [
         'line-highlight',
