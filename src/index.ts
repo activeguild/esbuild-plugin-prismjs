@@ -15,7 +15,7 @@ type PluginOptions = {
   inline?: boolean
 }
 
-export const prismPlugin = (options: PluginOptions): Plugin => {
+export const prismjsPlugin = (options: PluginOptions): Plugin => {
   return {
     name: 'prismjs',
     setup(build) {
@@ -30,10 +30,11 @@ export const prismPlugin = (options: PluginOptions): Plugin => {
         try {
           const finalOptions = getFiinalOptions(options)
           const loaded = ['prismjs/prism.js']
-          const loadedPrismjs = getLoader(prismConfig, [
-            ...finalOptions.languages,
-            ...finalOptions.plugins,
-          ])
+          const loadedPrismjs = getLoader(
+            prismConfig,
+            [...finalOptions.languages, ...finalOptions.plugins],
+            []
+          )
             .getIds()
             .reduce((deps: string[], dep: string) => {
               const addPath = isPlugin(dep)

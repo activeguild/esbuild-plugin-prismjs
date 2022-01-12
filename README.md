@@ -22,7 +22,7 @@ npm i -D esbuild-plugin-prismjs
 ## Usage
 
 ```bash
-import { prismPlugin } from 'esbuild-plugin-prismjs'
+import { prismjsPlugin } from 'esbuild-plugin-prismjs'
 import { build } from 'esbuild'
 
 build({
@@ -32,8 +32,8 @@ build({
   minify: true,
   platform: 'node',
   plugins: [
-    prismPlugin({
-      inlin: true,
+    prismjsPlugin({
+      inline: true,
       languages: ['typescript', 'javascript', 'css', 'markup'],
       plugins: [
         'line-highlight',
@@ -51,9 +51,9 @@ build({
 
 ## Options
 
-The plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
+A plugin option is [babel-plugin-prismjs](https://www.npmjs.com/package/babel-plugin-prismjs) and you can use the same option.
 
-#### Custom Options
+#### Original Options
 
 | Property | Type    | Description                          |
 | -------- | ------- | ------------------------------------ |
