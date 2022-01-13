@@ -6,4 +6,5 @@ build({
   bundle: true,
   minify: true,
   platform: 'node',
+  external: ['esbuild'],
 }).catch(() => process.exit(1))

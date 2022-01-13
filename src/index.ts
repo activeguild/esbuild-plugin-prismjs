@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import type { Plugin } from 'esbuild'
+import { Plugin, transformSync } from 'esbuild'
 import fs from 'fs'
 import path from 'path'
 import prismConfig from 'prismjs/components.js'
@@ -75,16 +75,19 @@ export const prismjsPlugin = (options: PluginOptions): Plugin => {
           }
 
           if (css) {
-            const replacedCss = css.replace(/[\n]/g, '').replace(/\s+/g, ' ')
+            const finalCss = transformSync(css, {
+              minify: true,
+              loader: 'css',
+            }).code
             if (finalOptions.inline) {
-              const inlineStyleScript = makeInsertStyleScript(replacedCss)
-              contents = `${contents};${inlineStyleScript}`
+              const inlineStyleScript = makeInsertStyleScript(finalCss)
+              contents = `${contents}${inlineStyleScript}`
             } else {
               const outpurCssFilePath = path.resolve(
                 build.initialOptions.outdir || './',
                 'prism.css'
               )
-              fs.writeFileSync(outpurCssFilePath, replacedCss)
+              fs.writeFileSync(outpurCssFilePath, finalCss)
             }
           }
           return {
