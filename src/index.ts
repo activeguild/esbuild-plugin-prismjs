@@ -9,9 +9,9 @@ type Category = 'plugins' | 'languages' | 'themes'
 
 type PluginOptions = {
   languages: string | string[]
-  plugins: string[]
-  theme: string
-  css: true
+  plugins?: string[]
+  theme?: string
+  css?: boolean
   inline?: boolean
 }
 
@@ -115,8 +115,11 @@ export const prismjsPlugin = (options: PluginOptions): Plugin => {
 const getFiinalOptions = (options: PluginOptions): Required<PluginOptions> => {
   return {
     ...options,
-    inline: options.inline === undefined ? true : options.inline,
     languages: getFiinalLanguages(options.languages),
+    plugins: options.plugins ? options.plugins : [],
+    theme: options.theme ? options.theme : '',
+    css: options.css === undefined ? false : options.css,
+    inline: options.inline === undefined ? true : options.inline,
   }
 }
 
