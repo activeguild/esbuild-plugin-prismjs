@@ -1,6 +1,6 @@
 {
   "name": "esbuild-plugin-prismjs",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A prismjs plugin for esbuild.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
